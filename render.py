@@ -36,23 +36,26 @@ template = env.get_template(TEMPLATE_FILENAME)
 ## into a new dictionary called 'vlans'
 ## ---------------------------------------------------------------------------
 
-def transform_vlan_data(d):
+def transform_vlan_data(row):
     # the first thing we want to do is remove all fields that start with
     # "vlan_" from the original dictionary.  we only want to keep the
     # fields that do not have a value of "0" as the csv-data uses "0" to
     # indicate a non-used vlan.  The result is a dictionary.
 
     vlan_fields = {
-        k: v for k, v in d.items()
-        if k.startswith('vlan_') and d.pop(k) if v != '0'
+        field_name: field_value
+        for field_name, field_value in row.items()
+        if field_name.startswith('vlan_') and row.pop(field_name)
+        if field_value != '0'
     }
 
     # now that we have that field list, we want to map the "vlan_name_<n>"
     # values to the actual "vlan_id_<n>" values.  we want to create a new
     # entry in the original dictionary called 'vlans' to store this new
-    # vlan dictionary
+    # vlan dictionary.  We also need to handle the case when the vlan name
+    # has whitespace; so covert spaces to underscoores (_).
 
-    d['vlans'] = {
+    row['vlans'] = {
         vlan_fields[f].replace(' ', '_'): vlan_fields[f.replace('name', 'id')]
         for f in vlan_fields if f.startswith('vlan_name')
     }
@@ -65,7 +68,7 @@ def transform_vlan_data(d):
 for row in csv.DictReader(open(CSVDATA_FILENAME)):
     transform_vlan_data(row)
     with open(row['hostname'] + '.txt', 'w+') as f:
-        f.write(template.render(**row))
+        f.write(template.render(row))
 
 ##
 ## all done!
