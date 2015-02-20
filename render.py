@@ -1,7 +1,7 @@
 #   Author: Jeremy Schulman (nwkautomaniac@gmail.com)
 #
 #   This code is free software: you can redistribute it and/or modify
-#   it under the terms of the BSD-3 License.
+#   it under the terms of the MIT License.
 #
 #   The author provides no warranties regarding the software, which is
 #   provided "AS-IS" and your use of this software is entirely at your
