@@ -21,8 +21,6 @@ TEMPLATE_FILENAME = 'cisco.j2'
 CSVDATA_FILENAME = 'hosts_data.csv'
 
 
-
-
 ## ---------------------------------------------------------------------------
 ## define a function that will transform the "vlan_name_<n>" and "vlan_id_<n>"
 ## into a new dictionary called 'vlans'
