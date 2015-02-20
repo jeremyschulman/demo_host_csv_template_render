@@ -1,0 +1,100 @@
+no service pad
+service timestamps debug datetime msec localtime
+service timestamps log datetime msec localtime
+service password-encryption
+service compress-config
+service sequence-numbers
+service counters max age 10
+hostname {{ hostname }}
+logging buffered 8000 informational
+logging rate-limit 10
+no logging console
+enable secret {{ enable_password }}
+username {{ user_name }} secret {{ user_password }}
+aaa new-model
+aaa authentication login default local
+clock timezone GMT 0 0
+clock summer-time BST recurring last Sun Mar 1:00 last Sun Oct 1:00
+no ip source-route
+no ip domain-lookup
+ip domain-name {{ domain_name }}
+vtp domain {{ vtp_domain }}
+vtp mode transparent
+spanning-tree mode rapid-pvst
+udld enable
+errdisable recovery cause all
+port-channel load-balance src-dst-ip
+ip name-server {{ name_server }}
+no ip http server
+no ip http secure-server
+ip tcp synwait-time 5
+ip ssh time-out 60
+ip ssh version 2
+ip scp server enable
+snmp-server community {{ snmp_comm_ro }}
+snmp-server community {{ snmp_comm_rw }}
+ntp server {{ ntp_server }}
+ntp update-calendar
+
+line con 0
+exec-timeout 5 0
+privilege level 15
+password {{ console_password }}
+stopbits 1
+
+access-list 55 permit {{ acl_mgmt_subnet }} 0.0.0.255
+access-list 55 permit {{ acl_mgmt_host }} 255.255.255.255
+ip ssh source-interface {{ acl_source }}
+line vty 0 15
+transport input ssh
+transport preferred none
+access-class 55 in
+
+tacacs server TACACS-SERVER-1
+address ipv4 10.4.48.15
+key [tacacs key]
+!
+aaa group server tacacs+ TACACS-SERVERS
+server name TACACS-SERVER-1
+!
+aaa authentication login default group TACACS-SERVERS local
+aaa authorization exec default group TACACS-SERVERS local
+aaa authorization console
+ip http authentication aaa
+
+vlan 999
+ name NATIVE
+
+{% for vlan_name, vlan_id in vlans.iteritems() %}
+vlan {{ vlan_id }}
+ name {{ vlan_name }}
+{% endfor %}
+
+interface 0
+ip address {{ ip_address }} 
+no shutdown
+ip default-gateway 
+
+ip dhcp snooping vlan 1-1001
+no ip dhcp snooping information option
+ip dhcp snooping
+ip arp inspection vlan 1-1001
+spanning-tree portfast bpduguard default
+ipv6 nd raguard policy HOST_POLICY
+device-role host
+
+interface range [interface type] [port number]-[port number]
+switchport access vlan [data vlan]
+switchport voice vlan [voice vlan]
+switchport host
+load-interval 30
+switchport port-security maximum 3
+switchport port-security
+switchport port-security aging time 2
+switchport port-security aging type inactivity
+switchport port-security violation restrict
+ip arp inspection limit rate 100
+ip dhcp snooping limit rate 100
+ip verify source
+ipv6 nd raguard attach-policy HOST_POLICY
+macro name AccessEdgeQoS
