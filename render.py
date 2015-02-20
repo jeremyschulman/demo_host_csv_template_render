@@ -20,15 +20,7 @@ import csv
 TEMPLATE_FILENAME = 'cisco.j2'
 CSVDATA_FILENAME = 'hosts_data.csv'
 
-## ---------------------------------------------------------------------------
-## create a jinja2 environment and load the template file
-## ---------------------------------------------------------------------------
 
-env = jinja2.Environment(
-    loader=jinja2.FileSystemLoader(os.getcwd()),
-    trim_blocks=True, lstrip_blocks=True)
-
-template = env.get_template(TEMPLATE_FILENAME)
 
 
 ## ---------------------------------------------------------------------------
@@ -59,6 +51,16 @@ def transform_vlan_data(row):
         vlan_fields[f].replace(' ', '_'): vlan_fields[f.replace('name', 'id')]
         for f in vlan_fields if f.startswith('vlan_name')
     }
+
+## ---------------------------------------------------------------------------
+## create a jinja2 environment and load the template file
+## ---------------------------------------------------------------------------
+
+env = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(os.getcwd()),
+    trim_blocks=True, lstrip_blocks=True)
+
+template = env.get_template(TEMPLATE_FILENAME)
 
 ## ---------------------------------------------------------------------------
 ## now read the CSV file, processing each row, and creating a
